@@ -31,35 +31,39 @@ type AgentService struct {
 	Mutex *sync.RWMutex
 }
 
-func (s *AgentService) Ping(
-	args ServiceRequest,
+func (s *AgentService) Ping(args ServiceRequest,
 	reply *ServiceResponse) error {
 	reply.Result = "Pong"
 	return nil
 }
 
-func (s *AgentService) State(
-	args ServiceRequest,
-	reply *ServiceResponse) error {
-	s.Mutex.RLock()
-	defer s.Mutex.RUnlock()
-	reply.Result = string(s.Agent.State)
-	return nil
-}
-
-func (s *AgentService) Start(
-	args ServiceRequest,
-	reply *ServiceResponse) error {
-	s.Mutex.RLock()
-	defer s.Mutex.RUnlock()
-	s.Agent.State = START
-	reply.Result = string(s.Agent.State)
-	return nil
-}
-
-func (s *AgentService) FakeError(
-	args ServiceRequest,
+func (s *AgentService) FakeError(args ServiceRequest,
 	reply *ServiceResponse) error {
 
 	return errors.New("System Error")
+}
+
+func (s *AgentService) State(args ServiceRequest,
+	reply *ServiceResponse) error {
+	s.Mutex.RLock()
+	defer s.Mutex.RUnlock()
+	reply.Result = string(s.Agent.State)
+	return nil
+}
+
+func (s *AgentService) State(args ServiceRequest,
+	reply *ServiceResponse) error {
+	s.Mutex.RLock()
+	defer s.Mutex.RUnlock()
+	reply.Result = string(s.Agent.State)
+	return nil
+}
+
+func (s *AgentService) Start(args ServiceRequest,
+	reply *ServiceResponse) error {
+	s.Mutex.Lock()
+	defer s.Mutex.Unlock()
+	s.Agent.State = START
+	reply.Result = string(s.Agent.State)
+	return nil
 }
